@@ -2,7 +2,7 @@
 
 A free, fully local Retrieval-Augmented Generation (RAG) chat application that allows you to talk to your PDF documents. It uses **Flask** for the backend, **FAISS** for vector search, and **Ollama** to run large language models completely offline.
 
-![RAG Chat UI](https://via.placeholder.com/800x450.png?text=RAG+Chat+UI+Screenshot)
+
 
 ## ✨ Features
 * **100% Free & Local:** No cloud API keys needed. Your documents stay entirely on your machine.
