@@ -1,0 +1,19 @@
+# Web Framework
+flask==3.1.1
+flask-cors==5.0.1
+
+# PDF Text Extraction
+PyMuPDF==1.25.5
+
+# Embeddings
+sentence-transformers==4.1.0
+
+# Vector Store
+faiss-cpu==1.11.0
+
+# LLM Integration (Ollama)
+ollama==0.5.1
+
+# Utilities
+python-dotenv==1.1.0
+werkzeug==3.1.3
