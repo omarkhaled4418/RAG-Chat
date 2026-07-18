@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat with your PDF documents using AI — a free RAG-powered assistant.">
+    <title>RAG Chat — Chat with Your Documents</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">📄</span>
+                <h1>RAG Chat</h1>
+            </div>
+            <button class="sidebar-toggle" id="sidebarClose" aria-label="Close sidebar">✕</button>
+        </div>
+
+        <!-- Upload area -->
+        <div class="upload-section">
+            <div class="upload-dropzone" id="dropzone">
+                <div class="upload-icon">☁️</div>
+                <p class="upload-text">Drop PDFs here</p>
+                <p class="upload-subtext">or click to browse</p>
+                <input type="file" id="fileInput" accept=".pdf" multiple hidden>
+            </div>
+            <div class="upload-progress" id="uploadProgress" hidden>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <p class="progress-text" id="progressText">Uploading...</p>
+            </div>
+        </div>
+
+        <!-- Indexed docs info -->
+        <div class="index-info">
+            <div class="info-row">
+                <span class="info-label">Chunks indexed</span>
+                <span class="info-value" id="chunkCount">0</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="sidebar-actions">
+            <button class="btn btn-outline" id="btnNewChat">
+                <span>＋</span> New Chat
+            </button>
+            <button class="btn btn-danger-outline" id="btnClearIndex">
+                <span>🗑</span> Clear Index
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>Powered by <strong>Ollama</strong> + <strong>FAISS</strong></p>
+        </div>
+    </aside>
+
+    <!-- ─── Main content ────────────────────────────────────────────── -->
+    <main class="main" id="main">
+        <!-- Mobile header -->
+        <header class="mobile-header">
+            <button class="sidebar-toggle" id="sidebarOpen" aria-label="Open sidebar">☰</button>
+            <h2>RAG Chat</h2>
+        </header>
+
+        <!-- Chat area -->
+        <div class="chat-container" id="chatContainer">
+            <!-- Welcome screen -->
+            <div class="welcome" id="welcome">
+                <div class="welcome-icon">🤖</div>
+                <h2>Chat with your Documents</h2>
+                <p>Upload PDF files and ask questions. The AI will answer using only the content from your documents.</p>
+                <div class="welcome-features">
+                    <div class="feature-card">
+                        <span class="feature-icon">📤</span>
+                        <h3>Upload PDFs</h3>
+                        <p>Drag &amp; drop or browse to upload your documents.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔍</span>
+                        <h3>Smart Search</h3>
+                        <p>AI finds the most relevant passages in your documents.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">💬</span>
+                        <h3>Get Answers</h3>
+                        <p>Receive accurate answers with source citations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages" id="messages"></div>
+        </div>
+
+        <!-- Input area -->
+        <div class="input-area">
+            <form class="input-form" id="chatForm">
+                <div class="input-wrapper">
+                    <textarea
+                        id="chatInput"
+                        placeholder="Ask a question about your documents..."
+                        rows="1"
+                        autocomplete="off"
+                    ></textarea>
+                    <button type="submit" class="btn-send" id="btnSend" aria-label="Send message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
