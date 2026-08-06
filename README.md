@@ -4,7 +4,7 @@ A free, fully local Retrieval-Augmented Generation (RAG) chat application that a
 
 
 
-## ✨ Features
+##  Features
 * **100% Free & Local:** No cloud API keys needed. Your documents stay entirely on your machine.
 * **Smart PDF Parsing:** Extracts text from PDFs using PyMuPDF and intelligently chunks it by sentences.
 * **Vector Search:** Uses `sentence-transformers` and FAISS to instantly find relevant context.
@@ -13,7 +13,7 @@ A free, fully local Retrieval-Augmented Generation (RAG) chat application that a
 * **Multi-lingual:** Automatically answers in the exact same language you ask your questions in.
 * **Source Citations:** Shows exactly which pages it pulled information from.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 * **Backend:** Python, Flask
 * **AI & LLMs:** Groq API (`llama-3.1-8b-instant`)
 * **Embeddings:** `sentence-transformers` (`all-MiniLM-L6-v2`)
@@ -23,7 +23,7 @@ A free, fully local Retrieval-Augmented Generation (RAG) chat application that a
 
 ---
 
-## 🚀 Getting Started Locally
+##  Getting Started Locally
 
 ### 1. Setup the Project
 Clone the repository and set up your virtual environment:
@@ -72,7 +72,7 @@ You can host this app completely for free using **Hugging Face Spaces**. It will
 
 ---
 
-## 🛑 Common Issues & Troubleshooting
+##  Common Issues & Troubleshooting
 
 **1. "I get an SSL Certificate Error when trying to upload a PDF"**
 If you see an error mentioning `CERTIFICATE_VERIFY_FAILED` on Windows, your Python cannot verify the HuggingFace servers to download the embedding model.
@@ -86,7 +86,7 @@ The app is configured to keep the model loaded in memory permanently (`keep_aliv
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 ```text
 rag-chat/
 ├── app/
