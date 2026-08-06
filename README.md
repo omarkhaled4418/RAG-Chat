@@ -109,5 +109,5 @@ rag-chat/
 └── run.py                 # Application entry point
 ```
 
-## 📜 License
+##  License
 This project is open-source and available under the MIT License. Feel free to fork it, modify it, and use it for your own personal local AI setup!
