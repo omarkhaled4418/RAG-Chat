@@ -23,6 +23,11 @@ def get_history(session_id: str) -> list[dict]:
     return list(_histories[session_id])
 
 
+def get_all_histories() -> dict[str, list[dict]]:
+    """Return all conversation histories across all sessions."""
+    return dict(_histories)
+
+
 def clear_history(session_id: str) -> None:
     """Clear conversation history for a session."""
     _histories[session_id] = []

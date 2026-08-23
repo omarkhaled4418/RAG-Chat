@@ -6,11 +6,7 @@ from flask import Flask
 
 def create_app():
     """Application factory."""
-    app = Flask(
-        __name__,
-        static_folder="static",
-        template_folder="templates",
-    )
+    app = Flask(__name__)
     app.config.from_object(Config)
 
     # Enable CORS for external tools like n8n

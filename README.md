@@ -1,113 +1,259 @@
-# RAG Chat — AI Document Assistant
+# RAG Chat — Headless REST API
 
-A free, fully local Retrieval-Augmented Generation (RAG) chat application that allows you to talk to your PDF documents. It uses **Flask** for the backend, **FAISS** for vector search, and **Ollama** to run large language models completely offline.
+A high-performance, fully headless Retrieval-Augmented Generation (RAG) REST API service. Chat with your documents, ingest files or raw text, perform ultra-fast hybrid search, and manage vector indices completely through standard HTTP APIs.
 
-
-
-##  Features
-* **100% Free & Local:** No cloud API keys needed. Your documents stay entirely on your machine.
-* **Smart PDF Parsing:** Extracts text from PDFs using PyMuPDF and intelligently chunks it by sentences.
-* **Vector Search:** Uses `sentence-transformers` and FAISS to instantly find relevant context.
-* **Beautiful UI:** A modern, glassmorphic dark-mode web interface.
-* **Markdown Support:** The AI's responses are streamed in real-time and formatted beautifully with lists, bold text, and code blocks.
-* **Multi-lingual:** Automatically answers in the exact same language you ask your questions in.
-* **Source Citations:** Shows exactly which pages it pulled information from.
-
-##  Tech Stack
-* **Backend:** Python, Flask
-* **AI & LLMs:** Groq API (`llama-3.1-8b-instant`)
-* **Embeddings:** `sentence-transformers` (`all-MiniLM-L6-v2`)
-* **Vector Database:** FAISS (CPU)
-* **Frontend:** HTML5, Vanilla CSS, JS (with `marked.js` for markdown)
-* **Hosting:** Docker (ready for Hugging Face Spaces)
+## ⚡ Features & Performance
+* **100% Headless:** Pure REST API architecture. No UI bloat, easily integrable into n8n, workflows, web apps, or backend services.
+* **Ultra-Fast Hybrid Search:** Combines FAISS L2 vector embeddings with optimized exact pattern/keyword matching (sub-60ms retrieval).
+* **Connection Pooling:** Cached LLM client sessions with HTTP keep-alive reuse for minimum time-to-first-token.
+* **Flexible Ingestion:** Ingest `.pdf`, `.txt`, binary files, or raw text directly via JSON payloads.
+* **Real-Time Streaming:** Server-Sent Events (SSE) streaming endpoint for instantaneous token streaming.
+* **Document & History Management:** Full API control over indexed documents, chunk statistics, and multi-session conversation history.
 
 ---
 
-##  Getting Started Locally
+## 🛠️ Tech Stack
+* **Framework:** Python, Flask (Headless)
+* **LLM Engine:** Universal OpenAI Standard (Groq, DashScope/Qwen, OpenRouter, Ollama, etc.)
+* **Embeddings:** `sentence-transformers` (`all-MiniLM-L6-v2`) with PyTorch inference optimization
+* **Vector Store:** FAISS (CPU)
+* **PDF Extraction:** PyMuPDF (`fitz`)
 
-### 1. Setup the Project
-Clone the repository and set up your virtual environment:
+---
 
+## 🚀 Quick Start
+
+### 1. Installation
 ```bash
 git clone https://github.com/yourusername/rag-chat.git
 cd rag-chat
 python -m venv venv
-venv\Scripts\activate  # On Windows
+venv\Scripts\activate  # On Windows (or source venv/bin/activate on Linux/Mac)
 pip install -r requirements.txt
 ```
 
-### 2. Get a Groq API Key
-1. Go to the [Groq Console](https://console.groq.com/keys) and create a free account.
-2. Generate an API Key.
-3. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-4. Paste your API key inside `.env`:
-   ```
-   GROQ_API_KEY=gsk_your_api_key_here
-   ```
+### 2. Configure Environment (`.env`)
+Copy `.env.example` to `.env` and set your LLM API credentials:
+```env
+LLM_API_KEY=your_api_key_here
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=qwen/qwen3.6-27b
+```
 
-### 3. Run the App
+### 3. Run the API Server
 ```bash
 python run.py
 ```
-Open your browser and navigate to `http://localhost:5000`.
+Server will be available at `http://localhost:5000`.
 
 ---
 
-## ☁️ Deploying Online (Free 24/7 Hosting)
+## 📡 REST API Reference
 
-You can host this app completely for free using **Hugging Face Spaces**. It will use 0% of your computer's memory!
+### 1. Health & Endpoint Catalog
+`GET /` or `GET /api` or `GET /health`
 
-1. Create a free account on [Hugging Face](https://huggingface.co/).
-2. Go to your profile and click **New Space**.
-3. Set a name for your space (e.g., `my-rag-chat`).
-4. Select **Docker** as the Space SDK, and choose **Blank**.
-5. Set Space Hardware to **Free**.
-6. Once the space is created, click **Settings** -> **Variables and secrets**.
-   - Add a new **Secret** named `GROQ_API_KEY` and paste your Groq API key.
-7. Go back to the **App** tab, click **Files**, and upload all the files from this folder (including the `Dockerfile`).
-8. Hugging Face will automatically build your Docker container and start your app!
-
----
-
-##  Common Issues & Troubleshooting
-
-**1. "I get an SSL Certificate Error when trying to upload a PDF"**
-If you see an error mentioning `CERTIFICATE_VERIFY_FAILED` on Windows, your Python cannot verify the HuggingFace servers to download the embedding model.
-* **Fix:** Run `pip install --upgrade certifi` or `python -m pip install python-certifi-win32` in your terminal.
-
-**2. "The AI says it doesn't have any documents to search"**
-Ensure that your PDF actually contains extractable text (and is not just scanned images). If the document is purely images, the current PDF parser (PyMuPDF) will not extract OCR data by default.
-
-**3. "The AI takes a very long time to answer"**
-The app is configured to keep the model loaded in memory permanently (`keep_alive=-1`). However, if your computer has limited RAM, Ollama might struggle. Ensure you have at least 8GB of RAM for the 3B models, and close other heavy applications.
+**Response:**
+```json
+{
+  "status": "online",
+  "service": "RAG Chat Headless REST API",
+  "version": "2.0.0",
+  "config": {
+    "embedding_model": "all-MiniLM-L6-v2",
+    "llm_model": "qwen/qwen3.6-27b"
+  },
+  "stats": {
+    "chunks_indexed": 12,
+    "documents_indexed": 2
+  }
+}
+```
 
 ---
 
-##  Project Structure
+### 2. Ingest Document File
+`POST /api/upload`
+
+Upload `.pdf` or `.txt` files using multipart form-data or raw binary.
+
+**cURL Example:**
+```bash
+curl -X POST http://localhost:5000/api/upload \
+  -F "file=@/path/to/document.pdf"
+```
+
+---
+
+### 3. Ingest Raw Text / Snippet
+`POST /api/documents/text`
+
+Directly embed and index a raw text snippet or markdown notes without creating files.
+
+**Request Body:**
+```json
+{
+  "text": "Antigravity Superchargers are located in Sector 7 and provide 350kW ultra-fast charging.",
+  "title": "chargers_guide.txt"
+}
+```
+
+**Response:**
+```json
+{
+  "result": {
+    "filename": "chargers_guide.txt",
+    "pages": 1,
+    "chunks": 1
+  },
+  "total_chunks_indexed": 1
+}
+```
+
+---
+
+### 4. Fast Hybrid Search (Without LLM)
+`POST /api/search`
+
+Perform rapid similarity and keyword retrieval against indexed chunks.
+
+**Request Body:**
+```json
+{
+  "query": "Where is the 350kW supercharger?",
+  "top_k": 3
+}
+```
+
+**Response:**
+```json
+{
+  "query": "Where is the 350kW supercharger?",
+  "count": 1,
+  "latency_ms": 58.14,
+  "results": [
+    {
+      "source": "chargers_guide.txt",
+      "page": 1,
+      "chunk_id": 0,
+      "text": "Antigravity Superchargers are located in Sector 7 and provide 350kW ultra-fast charging.",
+      "score": 0.0025
+    }
+  ]
+}
+```
+
+---
+
+### 5. Chat with RAG (JSON Response)
+`POST /api/chat`
+
+**Request Body:**
+```json
+{
+  "message": "Where can I find the 350kW supercharger?",
+  "session_id": "user_session_123",
+  "top_k": 5,
+  "temperature": 0.2
+}
+```
+
+**Response:**
+```json
+{
+  "answer": "The 350kW superchargers are located in Sector 7.",
+  "session_id": "user_session_123",
+  "latency_ms": 320.5,
+  "sources": [
+    {
+      "source": "chargers_guide.txt",
+      "page": 1
+    }
+  ]
+}
+```
+
+---
+
+### 6. Chat Streaming (Server-Sent Events)
+`POST /api/chat/stream`
+
+Streams tokens in real-time.
+
+**cURL Example:**
+```bash
+curl -N -X POST http://localhost:5000/api/chat/stream \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Summarize the key points", "session_id": "sess_1"}'
+```
+
+---
+
+### 7. List Indexed Documents
+`GET /api/documents`
+
+**Response:**
+```json
+{
+  "documents": [
+    {
+      "source": "chargers_guide.txt",
+      "chunks": 1,
+      "page_count": 1
+    }
+  ],
+  "total_documents": 1,
+  "total_chunks": 1
+}
+```
+
+---
+
+### 8. Delete a Document
+`DELETE /api/documents/<filename>`
+
+Removes all vectors associated with the specified document from the index.
+
+**cURL Example:**
+```bash
+curl -X DELETE http://localhost:5000/api/documents/chargers_guide.txt
+```
+
+---
+
+### 9. Get / Clear Conversation History
+* `GET /api/history?session_id=user_session_123` — Retrieve history for a session.
+* `POST /api/history/clear` with `{"session_id": "user_session_123"}` — Clear history.
+
+---
+
+### 10. Vector Index Status & Clear
+* `GET /api/index/status` — Get chunk & document counts.
+* `POST /api/index/clear` — Clear entire vector index.
+
+---
+
+## 📂 Headless Architecture Structure
 ```text
 rag-chat/
 ├── app/
-│   ├── config.py          # Environment settings
-│   ├── routes.py          # Flask REST APIs
-│   ├── rag_engine.py      # Core RAG logic & pipeline
-│   ├── vector_store.py    # FAISS database manager
-│   ├── llm.py             # Ollama integration
-│   ├── embedder.py        # Sentence transformers
-│   ├── chunker.py         # Text chunking logic
-│   └── pdf_parser.py      # PDF text extraction
-├── static/
-│   ├── css/style.css      # Dark-mode UI styling
-│   └── js/app.js          # Chat, streaming, and UI logic
-├── templates/
-│   └── index.html         # Main web interface
-├── data/                  # Auto-generated FAISS database
-├── uploads/               # Temporary PDF storage
-├── requirements.txt
-└── run.py                 # Application entry point
+│   ├── config.py          # Environment configuration
+│   ├── routes.py          # REST API endpoints & request handlers
+│   ├── rag_engine.py      # Core RAG orchestration pipeline
+│   ├── vector_store.py    # FAISS vector store & hybrid search engine
+│   ├── llm.py             # OpenAI client pooling & generation
+│   ├── embedder.py        # Sentence transformers with PyTorch inference mode
+│   ├── chunker.py         # Smart sentence-boundary text chunker
+│   ├── pdf_parser.py      # PDF & text extractors
+│   └── chat_history.py    # Multi-session chat history store
+├── data/                  # FAISS index storage
+├── uploads/               # Temporary file storage
+├── Dockerfile             # Container definition for cloud/HuggingFace deployment
+├── requirements.txt       # Python dependencies
+├── run.py                 # Application entry point
+└── test_api.py            # API automated test suite
 ```
 
-##  License
-This project is open-source and available under the MIT License. Feel free to fork it, modify it, and use it for your own personal local AI setup!
+## 📜 License
+MIT License
+
