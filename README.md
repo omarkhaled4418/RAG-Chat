@@ -253,7 +253,3 @@ rag-chat/
 ├── run.py                 # Application entry point
 └── test_api.py            # API automated test suite
 ```
-
-## 📜 License
-MIT License
-
